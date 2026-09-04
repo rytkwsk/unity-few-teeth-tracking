@@ -12,6 +12,9 @@ public class M3TPosePacket
     public double timestamp;
     public string mode;
     public float[] pose_cv;
+    // Anchor Switching (tracker_anchor_switching.py) が送る場合のみ入る。
+    // 単一モデルのトラッカー(tracker_premolar_canine.py 等)からは常に null/空。
+    public string active_anchor;
 }
 
 public class M3TPoseReceiver : MonoBehaviour
@@ -34,6 +37,10 @@ public class M3TPoseReceiver : MonoBehaviour
     volatile bool running;
     readonly object packetLock = new object();
     M3TPosePacket latestPacket;
+
+    // Anchor Switching 用: 直近に受信した active_anchor ("A"/"B")。
+    // 単一モデル用トラッカーからはこのフィールドが来ないので既定値のまま。
+    public string ActiveAnchor { get; private set; } = "A";
 
     void Start()
     {
@@ -65,6 +72,9 @@ public class M3TPoseReceiver : MonoBehaviour
             packet = latestPacket;
             latestPacket = null;
         }
+
+        if (packet != null && !string.IsNullOrEmpty(packet.active_anchor))
+            ActiveAnchor = packet.active_anchor;
 
         if (!applyPose || packet == null || packet.pose_cv == null)
             return;

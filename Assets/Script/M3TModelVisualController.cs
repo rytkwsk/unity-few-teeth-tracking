@@ -28,6 +28,17 @@ public class M3TModelVisualController : MonoBehaviour
         SetVisualsEnabled(visualsEnabled);
     }
 
+    // Anchor Switching 用: 「今アクティブなアンカーかどうか」でアウトラインの
+    // 太さ/濃さを切り替える。マテリアル自体は共有 (outlineMaterial) なので、
+    // 呼ぶだけで即座に反映される(BuildOutlineObjectsの再実行は不要)。
+    public void SetAnchorHighlight(bool isActive, Color activeColor, Color inactiveColor,
+        float activeWidth, float inactiveWidth)
+    {
+        outlineColor = isActive ? activeColor : inactiveColor;
+        outlineWidth = isActive ? activeWidth : inactiveWidth;
+        EnsureMaterials();
+    }
+
     public void SetVisualsEnabled(bool enabled)
     {
         visualsEnabled = enabled;
