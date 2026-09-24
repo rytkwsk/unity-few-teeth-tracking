@@ -12,10 +12,43 @@ public class M3TCameraIntrinsics : MonoBehaviour
     public float cy = 229.68362f;
     public float nearClip = 0.01f;
     public float farClip = 5f;
+    // Game ビューの縦横比が映像（imageWidth:imageHeight）と違うとき、引き延ばさずに
+    // レターボックス（黒帯）で表示する。false だと Unity がビュー全体に引き延ばして描くため
+    // 映像も重畳も横に伸びてぼけたように見える。
+    public bool fitViewport = true;
 
     void Awake()
     {
         Apply();
+    }
+
+    void LateUpdate()
+    {
+        ApplyViewportRect();
+    }
+
+    void ApplyViewportRect()
+    {
+        if (!fitViewport || targetCamera == null || imageWidth <= 0 || imageHeight <= 0)
+            return;
+        var want = imageWidth / (float)imageHeight;
+        var have = Screen.width / (float)Screen.height;
+        Rect r;
+        if (have > want)
+        {
+            var w = want / have;
+            r = new Rect((1f - w) * 0.5f, 0f, w, 1f);
+        }
+        else
+        {
+            var h = have / want;
+            r = new Rect(0f, (1f - h) * 0.5f, 1f, h);
+        }
+        if (targetCamera.rect != r)
+        {
+            targetCamera.rect = r;
+            targetCamera.aspect = want;   // rect 変更で aspect が再計算されるので固定し直す
+        }
     }
 
     void OnEnable()

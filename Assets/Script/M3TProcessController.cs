@@ -132,7 +132,10 @@ public class M3TProcessController : MonoBehaviour
                 UseShellExecute = false,
                 CreateNoWindow = !showConsoleWindow,
                 RedirectStandardOutput = true,
-                RedirectStandardError = true
+                RedirectStandardError = true,
+                // tracker 側はパイプ出力時に UTF-8 で書く（tracker_four_group.py 先頭）。既定の cp932 で読むと文字化けする
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
             };
         }
         else
@@ -145,7 +148,10 @@ public class M3TProcessController : MonoBehaviour
                 UseShellExecute = false,
                 CreateNoWindow = !showConsoleWindow,
                 RedirectStandardOutput = true,
-                RedirectStandardError = true
+                RedirectStandardError = true,
+                // tracker 側はパイプ出力時に UTF-8 で書く（tracker_four_group.py 先頭）。既定の cp932 で読むと文字化けする
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
             };
             AddCondaEnvironmentPath(info);
         }
@@ -195,7 +201,10 @@ public class M3TProcessController : MonoBehaviour
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
-                RedirectStandardError = true
+                RedirectStandardError = true,
+                // tracker 側はパイプ出力時に UTF-8 で書く（tracker_four_group.py 先頭）。既定の cp932 で読むと文字化けする
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
             };
 
             using (var killer = Process.Start(info))

@@ -30,7 +30,8 @@ public class M3TFourGroupBootstrap : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             var child = transform.GetChild(i);
-            child.localScale    = Vector3.one * 0.04f;
+            // Python 側 MODEL_UNIT_IN_METER と一致させる（2026-09-09: ArUco 基準の実測から 0.04 → 0.025）
+            child.localScale    = Vector3.one * 0.025f;
             child.localPosition = Vector3.zero;
             child.localRotation = Quaternion.identity;
 
@@ -43,7 +44,7 @@ public class M3TFourGroupBootstrap : MonoBehaviour
             vc.visualsEnabled   = true;
             vc.showModelSurface = false;
             vc.opacity          = 0.025f;
-            vc.outlineWidth     = 0.006f;
+            vc.outlineWidth     = 0.0012f;   // メートル。VisualController がオブジェクト単位に換算する
             vc.modelColor       = new Color(activeCol.r, activeCol.g, activeCol.b, 0.025f);
             vc.outlineColor     = inactiveCol;
 

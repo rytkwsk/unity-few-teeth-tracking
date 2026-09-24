@@ -84,6 +84,8 @@ public class M3TModelVisualController : MonoBehaviour
 
         if (!showModelSurface)
         {
+            // 面は描かない。輪郭リングは M3T/OutlineSilhouette 側で「デプス書き＋押し出し裏面」の
+            // 2 パスとして完結しているので、ここで面のデプスを書く必要はない。
             foreach (var renderer in modelRenderers)
                 renderer.enabled = false;
             return;
@@ -173,7 +175,10 @@ public class M3TModelVisualController : MonoBehaviour
         }
 
         outlineMaterial.color = outlineColor;
-        outlineMaterial.SetFloat("_OutlineWidth", outlineWidth);
+        // シェーダは頂点をオブジェクト空間（OBJ 単位）で押し出す。outlineWidth はメートル指定なので
+        // lossyScale（= MODEL_UNIT_IN_METER 相当、現在 0.025）で割ってオブジェクト単位に直す。
+        var unitScale = targetRoot != null ? Mathf.Max(targetRoot.lossyScale.x, 1e-6f) : 1f;
+        outlineMaterial.SetFloat("_OutlineWidth", outlineWidth / unitScale);
     }
 
     Material GetModelMaterial()

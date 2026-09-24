@@ -322,12 +322,12 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   targetCamera: {fileID: 963194227}
-  imageWidth: 640
-  imageHeight: 480
-  fx: 553.5494
-  fy: 551.1633
-  cx: 318.2961
-  cy: 229.68362
+  imageWidth: 1280
+  imageHeight: 720
+  fx: 1001.6002
+  fy: 1024.028
+  cx: 640.2212
+  cy: 334.4454
   nearClip: 0.01
   farClip: 5
 --- !u!1001 &1000001
@@ -342,10 +342,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b979a70118962f14ead8982e54fc257b, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a801, type: 3}
 --- !u!4 &1000002 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b979a70118962f14ead8982e54fc257b, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a801, type: 3}
   m_PrefabInstance: {fileID: 1000001}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1000003
@@ -360,10 +360,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: bced8cabbb324e6478ba1644d6403c9f, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a802, type: 3}
 --- !u!4 &1000004 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: bced8cabbb324e6478ba1644d6403c9f, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a802, type: 3}
   m_PrefabInstance: {fileID: 1000003}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1000005
@@ -378,10 +378,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 717e78b5ee810a14f9cfd82102ce4d34, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a803, type: 3}
 --- !u!4 &1000006 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 717e78b5ee810a14f9cfd82102ce4d34, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a803, type: 3}
   m_PrefabInstance: {fileID: 1000005}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1000007
@@ -396,10 +396,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: bd8070b79d9017f489f6be3a4a84bb72, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a804, type: 3}
 --- !u!4 &1000008 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: bd8070b79d9017f489f6be3a4a84bb72, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a1c0e7d3b9f4e21a8c6d0f2b4e6a804, type: 3}
   m_PrefabInstance: {fileID: 1000007}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1790028326
@@ -443,7 +443,7 @@ MonoBehaviour:
   convertOpenCvToUnity: 1
   positionScale: {x: 1, y: 1, z: 1}
   positionOffset: {x: 0, y: 0, z: 0}
-  rotationOffsetEuler: {x: 180, y: 180, z: 180}
+  rotationOffsetEuler: {x: 0, y: 0, z: 180}
 --- !u!4 &1790028328
 Transform:
   m_ObjectHideFlags: 0
@@ -547,8 +547,8 @@ MonoBehaviour:
   anchorDVisual: {fileID: 0}
   anchorDActiveColor: {r: 1.0, g: 0.85, b: 0.1, a: 0.9}
   anchorDInactiveColor: {r: 0.4, g: 0.4, b: 0.4, a: 0.2}
-  activeOutlineWidth: 0.006
-  inactiveOutlineWidth: 0.0025
+  activeOutlineWidth: 0.0012
+  inactiveOutlineWidth: 0.0006
   ManualOverride:
 --- !u!114 &1790028333
 MonoBehaviour:

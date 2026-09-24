@@ -30,7 +30,13 @@ public class M3TPoseReceiver : MonoBehaviour
     public bool convertOpenCvToUnity = true;
     public Vector3 positionScale = Vector3.one;
     public Vector3 positionOffset = Vector3.zero;
-    public Vector3 rotationOffsetEuler = Vector3.zero;
+    // 既定 (0,0,180) の根拠 (2026-09-24):
+    //   convertOpenCvToUnity は Y 反転 S=diag(1,-1,1) をカメラ側・モデル側の両方に掛ける (S R S)。
+    //   一方 Unity の OBJ インポートはメッシュの X を反転する (右手系→左手系)。
+    //   モデル側に必要なのは diag(-1,1,1) なので、差分 diag(1,-1,1)·diag(-1,1,1) = diag(-1,-1,1) = Z 軸 180° を
+    //   ローカル側に右から掛ける。トラッカーの投影と Unity の投影が画素単位で一致することを確認済み。
+    //   (180,180,180) は 3 軸 180° の積 = 恒等回転なので「オフセットなし」と同じ。
+    public Vector3 rotationOffsetEuler = new Vector3(0f, 0f, 180f);
 
     UdpClient udpClient;
     Thread receiveThread;
