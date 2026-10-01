@@ -15,6 +15,10 @@ public class M3TPosePacket
     // Anchor Switching (tracker_anchor_switching.py) が送る場合のみ入る。
     // 単一モデルのトラッカー(tracker_premolar_canine.py 等)からは常に null/空。
     public string active_anchor;
+    // 階層アンカー版 tracker_four_group.py が送る: 実際に姿勢を出しているアンカー（"F"=歯列全体, "A".."D"）と
+    // 各アンカーの適合度 [F, A, B, C, D]（0..1）。旧トラッカーからは来ない。
+    public string pose_anchor;
+    public float[] quality;
 }
 
 public class M3TPoseReceiver : MonoBehaviour
@@ -47,6 +51,10 @@ public class M3TPoseReceiver : MonoBehaviour
     // Anchor Switching 用: 直近に受信した active_anchor ("A"/"B")。
     // 単一モデル用トラッカーからはこのフィールドが来ないので既定値のまま。
     public string ActiveAnchor { get; private set; } = "A";
+    public string TrackingMode { get; private set; } = "Waiting";
+    public string PoseAnchor { get; private set; } = "";
+    // [F, A, B, C, D] の順。未受信なら長さ 0。
+    public float[] Quality { get; private set; } = new float[0];
 
     void Start()
     {
@@ -81,6 +89,12 @@ public class M3TPoseReceiver : MonoBehaviour
 
         if (packet != null && !string.IsNullOrEmpty(packet.active_anchor))
             ActiveAnchor = packet.active_anchor;
+        if (packet != null && !string.IsNullOrEmpty(packet.mode))
+            TrackingMode = packet.mode;
+        if (packet != null && !string.IsNullOrEmpty(packet.pose_anchor))
+            PoseAnchor = packet.pose_anchor;
+        if (packet != null && packet.quality != null && packet.quality.Length > 0)
+            Quality = packet.quality;
 
         if (!applyPose || packet == null || packet.pose_cv == null)
             return;

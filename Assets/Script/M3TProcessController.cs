@@ -11,6 +11,8 @@ public class M3TProcessController : MonoBehaviour
 {
     [Header("Python Tracker")]
     public string pythonExe = @"C:\Users\rytkw\anaconda3\envs\pym3t\python.exe";
+    [Tooltip("tracker を OpenCV ウィンドウなしで起動する（M3T_HEADLESS=1）。表示系 50 ms/フレームを省く")]
+    public bool headlessTracker = true;
     public string workingDirectory = @"C:\Users\rytkw\Projects\pym3t";
     public string scriptPath = @"C:\Users\rytkw\Projects\pym3t\test_tracker.py";
     public bool useCondaActivate = true;
@@ -155,6 +157,11 @@ public class M3TProcessController : MonoBehaviour
             };
             AddCondaEnvironmentPath(info);
         }
+
+        // tracker 側は M3T_HEADLESS=1 で OpenCV ウィンドウ（waitKey 32 ms + HUD 描画 18 ms）を省略する。
+        // Unity に映像と品質バーがあるので不要。デバッグで OpenCV 窓が欲しいときは headlessTracker を外す。
+        if (headlessTracker)
+            info.EnvironmentVariables["M3T_HEADLESS"] = "1";
 
         return info;
     }
