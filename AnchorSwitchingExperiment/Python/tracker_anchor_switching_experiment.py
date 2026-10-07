@@ -29,9 +29,13 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-# few_teeth_tracking は pym3t とは別ディレクトリに配置されているため、
-# pym3t.pyd 等の所在地を明示的に指定する。
-PYM3T_DIR = r"C:\Users\rytkw\Projects\pym3t"
+# By default the three repositories are sibling directories. Environment
+# variables can override this when a different layout is required.
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+UNITY_PROJECT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
+PROJECTS_DIR = os.path.dirname(UNITY_PROJECT_DIR)
+PYM3T_DIR = os.path.abspath(os.environ.get(
+    "PYM3T_DIR", os.path.join(PROJECTS_DIR, "pym3t")))
 sys.path.insert(0, PYM3T_DIR)
 
 os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
@@ -79,15 +83,14 @@ threading.excepthook = _threading_excepthook
 
 # ─── 設定 ───────────────────────────────────────────────────────────────────
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
 # Keep this experiment isolated from the production tracker while reusing the
 # already-generated M3T model metadata. Override these paths with environment
 # variables when moving the experiment to another machine.
 SOURCE_PROJECT_DIR = os.environ.get(
     "M3T_SOURCE_PROJECT_DIR",
-    r"C:\Users\rytkw\Projects\few_teeth_tracking",
+    os.path.join(PROJECTS_DIR, "few_teeth_tracking"),
 )
+SOURCE_PROJECT_DIR = os.path.abspath(SOURCE_PROJECT_DIR)
 SOURCE_MODEL_DIR = os.environ.get(
     "M3T_SOURCE_MODEL_DIR",
     os.path.join(SOURCE_PROJECT_DIR, "models"),

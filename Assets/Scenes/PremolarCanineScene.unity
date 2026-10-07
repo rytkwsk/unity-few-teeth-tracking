@@ -472,11 +472,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a6ebf6c5ff347f4a8a6a0c40f296d25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pythonExe: C:\Users\rytkw\anaconda3\envs\pym3t\python.exe
-  workingDirectory: C:\Users\rytkw\Projects\few_teeth_tracking
-  scriptPath: C:\Users\rytkw\Projects\few_teeth_tracking\tracker_premolar_canine.py
+  pythonExe:
+  workingDirectory: ..\few_teeth_tracking
+  scriptPath: tracker_premolar_canine.py
   useCondaActivate: 1
-  condaBat: C:\Users\rytkw\anaconda3\condabin\conda.bat
+  condaBat:
   condaEnvironmentName: pym3t
   startOnPlay: 0
   showConsoleWindow: 0

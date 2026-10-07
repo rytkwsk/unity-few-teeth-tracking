@@ -4,8 +4,11 @@ import { pathToFileURL } from "node:url";
 import { Presentation, PresentationFile } from "@oai/artifact-tool";
 
 const workspaceDir = process.cwd();
-const SKILL_DIR = "C:/Users/rytkw/.codex/plugins/cache/openai-primary-runtime/presentations/26.909.12148/skills/presentations";
-const RUNTIME_PYTHON = "C:/Users/rytkw/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe";
+const SKILL_DIR = process.env.CODEX_PRESENTATIONS_SKILL_DIR;
+const RUNTIME_PYTHON = process.env.CODEX_RUNTIME_PYTHON || "python";
+if (!SKILL_DIR) {
+  throw new Error("Set CODEX_PRESENTATIONS_SKILL_DIR before rebuilding the presentation.");
+}
 const buildDir = path.join(workspaceDir, ".codex-slides");
 const finalPath = path.join(workspaceDir, "output", "presentation", "2026-10-03_progress_and_ieee_demo_practice.pptx");
 

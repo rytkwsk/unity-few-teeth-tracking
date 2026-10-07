@@ -577,11 +577,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a6ebf6c5ff347f4a8a6a0c40f296d25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pythonExe: C:\Users\rytkw\anaconda3\envs\pym3t\python.exe
-  workingDirectory: C:\Users\rytkw\Projects\unity-few-teeth-tracking\AnchorSwitchingExperiment\Python
-  scriptPath: C:\Users\rytkw\Projects\unity-few-teeth-tracking\AnchorSwitchingExperiment\Python\tracker_anchor_switching_experiment.py
+  pythonExe:
+  workingDirectory: AnchorSwitchingExperiment\Python
+  scriptPath: tracker_anchor_switching_experiment.py
   useCondaActivate: 1
-  condaBat: C:\Users\rytkw\anaconda3\condabin\conda.bat
+  condaBat:
   condaEnvironmentName: pym3t
   startOnPlay: 0
   showConsoleWindow: 0

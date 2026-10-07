@@ -10,13 +10,17 @@ using UnityEngine;
 public class M3TProcessController : MonoBehaviour
 {
     [Header("Python Tracker")]
-    public string pythonExe = @"C:\Users\rytkw\anaconda3\envs\pym3t\python.exe";
+    [Tooltip("空欄なら M3T_PYTHON_EXE、またはConda環境のpythonを使用します")]
+    public string pythonExe = "";
     [Tooltip("tracker を OpenCV ウィンドウなしで起動する（M3T_HEADLESS=1）。表示系 50 ms/フレームを省く")]
     public bool headlessTracker = true;
-    public string workingDirectory = @"C:\Users\rytkw\Projects\pym3t";
-    public string scriptPath = @"C:\Users\rytkw\Projects\pym3t\test_tracker.py";
+    [Tooltip("相対パスはUnityプロジェクトのルートを基準に解決します")]
+    public string workingDirectory = @"..\few_teeth_tracking";
+    [Tooltip("相対パスはworkingDirectoryを基準に解決します")]
+    public string scriptPath = "tracker.py";
     public bool useCondaActivate = true;
-    public string condaBat = @"C:\Users\rytkw\anaconda3\condabin\conda.bat";
+    [Tooltip("空欄なら M3T_CONDA_BAT、一般的なインストール先、PATH上のcondaの順で探索します")]
+    public string condaBat = "";
     public string condaEnvironmentName = "pym3t";
     public bool startOnPlay = false;
     public bool showConsoleWindow = false;
@@ -28,6 +32,10 @@ public class M3TProcessController : MonoBehaviour
     string lastStatus = "Stopped";
     string lastError = "";
     string logPath = "";
+    string resolvedPythonExe = "";
+    string resolvedWorkingDirectory = "";
+    string resolvedScriptPath = "";
+    string resolvedCondaLauncher = "";
     readonly object logLock = new object();
 
     public bool IsRunning => process != null && !process.HasExited;
@@ -56,27 +64,29 @@ public class M3TProcessController : MonoBehaviour
         lastStatus = "Starting";
         logPath = Path.Combine(Application.persistentDataPath, "m3t_tracker.log");
 
-        if (useCondaActivate && !File.Exists(condaBat))
+        ResolveRuntimePaths();
+
+        if (useCondaActivate && string.IsNullOrEmpty(resolvedCondaLauncher))
         {
-            ReportError($"Conda launcher was not found: {condaBat}");
+            ReportError("Conda was not found. Set M3T_CONDA_BAT or condaBat in the Inspector.");
             return;
         }
 
-        if (!useCondaActivate && !File.Exists(pythonExe))
+        if (!useCondaActivate && !File.Exists(resolvedPythonExe))
         {
-            ReportError($"M3T python executable was not found: {pythonExe}");
+            ReportError($"M3T python executable was not found: {resolvedPythonExe}");
             return;
         }
 
-        if (!Directory.Exists(workingDirectory))
+        if (!Directory.Exists(resolvedWorkingDirectory))
         {
-            ReportError($"M3T working directory was not found: {workingDirectory}");
+            ReportError($"M3T working directory was not found: {resolvedWorkingDirectory}");
             return;
         }
 
-        if (!File.Exists(scriptPath))
+        if (!File.Exists(resolvedScriptPath))
         {
-            ReportError($"M3T tracker script was not found: {scriptPath}");
+            ReportError($"M3T tracker script was not found: {resolvedScriptPath}");
             return;
         }
 
@@ -129,8 +139,8 @@ public class M3TProcessController : MonoBehaviour
             info = new ProcessStartInfo
             {
                 FileName = Environment.GetEnvironmentVariable("ComSpec") ?? "cmd.exe",
-                Arguments = $"/d /c \"\"{condaBat}\" activate {condaEnvironmentName} && python -u \"{scriptPath}\"\"",
-                WorkingDirectory = workingDirectory,
+                Arguments = $"/d /c \"\"{resolvedCondaLauncher}\" activate {condaEnvironmentName} && python -u \"{resolvedScriptPath}\"\"",
+                WorkingDirectory = resolvedWorkingDirectory,
                 UseShellExecute = false,
                 CreateNoWindow = !showConsoleWindow,
                 RedirectStandardOutput = true,
@@ -144,9 +154,9 @@ public class M3TProcessController : MonoBehaviour
         {
             info = new ProcessStartInfo
             {
-                FileName = pythonExe,
-                Arguments = $"-u \"{scriptPath}\"",
-                WorkingDirectory = workingDirectory,
+                FileName = resolvedPythonExe,
+                Arguments = $"-u \"{resolvedScriptPath}\"",
+                WorkingDirectory = resolvedWorkingDirectory,
                 UseShellExecute = false,
                 CreateNoWindow = !showConsoleWindow,
                 RedirectStandardOutput = true,
@@ -164,6 +174,68 @@ public class M3TProcessController : MonoBehaviour
             info.EnvironmentVariables["M3T_HEADLESS"] = "1";
 
         return info;
+    }
+
+    void ResolveRuntimePaths()
+    {
+        var projectRoot = Directory.GetParent(Application.dataPath).FullName;
+        resolvedWorkingDirectory = ResolvePath(projectRoot, workingDirectory);
+        resolvedScriptPath = ResolvePath(resolvedWorkingDirectory, scriptPath);
+
+        var pythonFromEnvironment = Environment.GetEnvironmentVariable("M3T_PYTHON_EXE");
+        resolvedPythonExe = ResolvePath(projectRoot,
+            !string.IsNullOrWhiteSpace(pythonFromEnvironment) ? pythonFromEnvironment : pythonExe);
+
+        var condaEnvironment = Environment.GetEnvironmentVariable("M3T_CONDA_ENV");
+        if (!string.IsNullOrWhiteSpace(condaEnvironment))
+            condaEnvironmentName = condaEnvironment.Trim();
+
+        var condaFromEnvironment = Environment.GetEnvironmentVariable("M3T_CONDA_BAT");
+        var configuredConda = !string.IsNullOrWhiteSpace(condaFromEnvironment)
+            ? condaFromEnvironment : condaBat;
+        resolvedCondaLauncher = FindCondaLauncher(configuredConda);
+    }
+
+    static string ResolvePath(string baseDirectory, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return "";
+        var expanded = Environment.ExpandEnvironmentVariables(value.Trim());
+        return Path.GetFullPath(Path.IsPathRooted(expanded)
+            ? expanded : Path.Combine(baseDirectory, expanded));
+    }
+
+    static string FindCondaLauncher(string configured)
+    {
+        if (!string.IsNullOrWhiteSpace(configured))
+        {
+            var expanded = Environment.ExpandEnvironmentVariables(configured.Trim());
+            if (File.Exists(expanded))
+                return Path.GetFullPath(expanded);
+        }
+
+        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var candidates = new[]
+        {
+            Path.Combine(userProfile, "anaconda3", "condabin", "conda.bat"),
+            Path.Combine(userProfile, "miniconda3", "condabin", "conda.bat"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                "anaconda3", "condabin", "conda.bat")
+        };
+        foreach (var candidate in candidates)
+            if (File.Exists(candidate))
+                return candidate;
+
+        var pathValue = Environment.GetEnvironmentVariable("PATH") ?? "";
+        foreach (var directory in pathValue.Split(Path.PathSeparator))
+        {
+            if (string.IsNullOrWhiteSpace(directory))
+                continue;
+            var candidate = Path.Combine(directory.Trim(), "conda.bat");
+            if (File.Exists(candidate))
+                return candidate;
+        }
+        return "";
     }
 
     public void StopTracking()
@@ -262,7 +334,7 @@ public class M3TProcessController : MonoBehaviour
 
     void AddCondaEnvironmentPath(ProcessStartInfo info)
     {
-        var envRoot = Directory.GetParent(pythonExe)?.FullName;
+        var envRoot = Directory.GetParent(resolvedPythonExe)?.FullName;
         if (string.IsNullOrEmpty(envRoot))
             return;
 
