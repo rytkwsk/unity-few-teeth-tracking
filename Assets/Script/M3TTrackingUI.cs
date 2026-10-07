@@ -73,10 +73,16 @@ public class M3TTrackingUI : MonoBehaviour
 
         if (processController != null)
         {
-            if (!string.IsNullOrEmpty(processController.LastError))
-                GUILayout.Label($"Last error: {processController.LastError}");
-            if (!string.IsNullOrEmpty(processController.LogPath))
-                GUILayout.Label($"Log: {processController.LogPath}");
+            // IMGUI performs layout and repaint in separate events. These values
+            // can change asynchronously while the Python process is starting.
+            // Conditionally adding/removing labels here therefore changes the
+            // number of controls between the two events and causes
+            // "Invalid GUILayout state" / "Getting control ..." errors.
+            // Keep the control tree stable and change only the displayed text.
+            var lastError = processController.LastError;
+            var logPath = processController.LogPath;
+            GUILayout.Label($"Last error: {(string.IsNullOrEmpty(lastError) ? "-" : lastError)}");
+            GUILayout.Label($"Log: {(string.IsNullOrEmpty(logPath) ? "-" : logPath)}");
         }
 
         if (videoBackground != null)

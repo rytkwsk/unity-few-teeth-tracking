@@ -30,6 +30,15 @@ public class M3TVideoBackground : MonoBehaviour
 
     public string Status => textureWidth > 0 ? $"{status} {textureWidth}x{textureHeight} #{receivedFrames}" : status;
 
+    void OnEnable()
+    {
+        // OnEnable is also called after a script recompilation while the Editor
+        // remains in Play mode. OnDisable stops the receive thread, so restart
+        // it here instead of leaving the Game view at "Video: Stopped".
+        if (Application.isPlaying && connectOnStart && !running)
+            StartVideo();
+    }
+
     void Start()
     {
         if (targetCamera == null)
@@ -39,7 +48,7 @@ public class M3TVideoBackground : MonoBehaviour
 
         EnsureBackground();
 
-        if (connectOnStart)
+        if (connectOnStart && !running)
             StartVideo();
     }
 

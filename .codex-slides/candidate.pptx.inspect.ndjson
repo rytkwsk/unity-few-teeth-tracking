@@ -1,0 +1,151 @@
+{"kind":"deck","id":"pr/0s1gwg","name":"Deck"}
+{"kind":"layout","layoutId":"03a31ddd-c7c9-4241-8999-85f330f29d45","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"add79ea1-d3db-4229-a132-7ad20be3923e","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/08q6pz","slide":1,"title":"Progress Update and IEEE Demo Practice","textShapes":4}
+{"kind":"shape","id":"sh/h8bat0rm","slide":1,"bbox":[0,0,28,720]}
+{"kind":"textbox","id":"sh/u5kbylsv","slide":1,"text":"Progress Update and IEEE Demo Practice","textPreview":"Progress Update and IEEE Demo Practice","textChars":38,"textLines":1,"bbox":[92,150,1040,140]}
+{"kind":"textbox","id":"sh/v6tsrq9g","slide":1,"text":"Few-teeth tracking for AR-assisted dental treatment","textPreview":"Few-teeth tracking for AR-assisted dental treatment","textChars":51,"textLines":1,"bbox":[96,305,960,62]}
+{"kind":"shape","id":"sh/4v2t4vax","slide":1,"bbox":[96,405,190,5]}
+{"kind":"textbox","id":"sh/5wbux0ri","slide":1,"text":"Meeting: October 3, 2026","textPreview":"Meeting: October 3, 2026","textChars":24,"textLines":1,"bbox":[96,442,520,40]}
+{"kind":"textbox","id":"sh/i9kb2ls7","slide":1,"text":"Draft based on the current Unity and Python implementation","textPreview":"Draft based on the current Unity and Python implementation","textChars":58,"textLines":1,"bbox":[96,492,760,38]}
+{"kind":"notes","id":"nt/08q6pz","slide":1,"text":"Opening (English): Today I will first summarize this month's implementation progress. Then I will practice the short explanation for the IEEE demonstration. The abstract PDF still needs to be checked, so any statement that depends on the submitted abstract should be confirmed before the meeting."}
+{"kind":"slide","id":"sl/64xou9","slide":2,"title":"ABSTRACT BASELINE","textShapes":14}
+{"kind":"shape","id":"sh/5wnih4fu","slide":2,"bbox":[0,0,1280,18]}
+{"kind":"textbox","id":"sh/i9wjmpw3","slide":2,"text":"ABSTRACT BASELINE","textPreview":"ABSTRACT BASELINE","textChars":17,"textLines":1,"bbox":[72,40,280,28]}
+{"kind":"textbox","id":"sh/ja50fuxo","slide":2,"text":"Submitted abstract: Anchor Switching","textPreview":"Submitted abstract: Anchor Switching","textChars":36,"textLines":1,"bbox":[72,78,1136,64]}
+{"kind":"textbox","id":"sh/w7u1kfex","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1180,670,48,24]}
+{"kind":"textbox","id":"sh/x8nidkfi","slide":2,"text":"Objective","textPreview":"Objective","textChars":9,"textLines":1,"bbox":[82,170,250,40]}
+{"kind":"textbox","id":"sh/a5cji5w7","slide":2,"text":"Maintain AR implant guidance when a hand or contra-angle handpiece partially occludes the dental cast.","textPreview":"Maintain AR implant guidance when a hand or contra-angle handpiece partially occludes the dental cast.","textChars":102,"textLines":1,"bbox":[82,214,520,122]}
+{"kind":"shape","id":"sh/v6l0baxs","slide":2,"bbox":[660,210,155,150]}
+{"kind":"shape","id":"sh/g3y1wjeh","slide":2,"bbox":[660,210,155,12]}
+{"kind":"textbox","id":"sh/1472pof2","slide":2,"text":"Multiple models","textPreview":"Multiple models","textChars":15,"textLines":1,"bbox":[672,230,131,56]}
+{"kind":"textbox","id":"sh/x4fyt8fq","slide":2,"text":"Independent dental\narch targets","textPreview":"Independent dental | arch targets","textChars":31,"textLines":2,"bbox":[672,292,131,55]}
+{"kind":"textbox","id":"sh/w36xk3e5","slide":2,"text":">","textPreview":">","textChars":1,"textLines":1,"bbox":[817,267,28,35]}
+{"kind":"shape","id":"sh/v2xgryxk","slide":2,"bbox":[845,210,155,150]}
+{"kind":"shape","id":"sh/a1ofitwz","slide":2,"bbox":[845,210,155,12]}
+{"kind":"textbox","id":"sh/90fypofe","slide":2,"text":"Select anchor","textPreview":"Select anchor","textChars":13,"textLines":1,"bbox":[857,230,131,56]}
+{"kind":"textbox","id":"sh/8fmxgjet","slide":2,"text":"Use the most stable\ntracking result","textPreview":"Use the most stable | tracking result","textChars":35,"textLines":2,"bbox":[857,292,131,55]}
+{"kind":"textbox","id":"sh/nedgnex8","slide":2,"text":">","textPreview":">","textChars":1,"textLines":1,"bbox":[1002,267,28,35]}
+{"kind":"shape","id":"sh/md4fe9w3","slide":2,"bbox":[1030,210,155,150]}
+{"kind":"shape","id":"sh/twzy1svi","slide":2,"bbox":[1030,210,155,12]}
+{"kind":"textbox","id":"sh/svqhsned","slide":2,"text":"Output model","textPreview":"Output model","textChars":12,"textLines":1,"bbox":[1042,230,131,56]}
+{"kind":"textbox","id":"sh/cri9kvql","slide":2,"text":"Keep the AR guidance\nvisible","textPreview":"Keep the AR guidance | visible","textChars":28,"textLines":2,"bbox":[1042,292,131,55]}
+{"kind":"shape","id":"sh/dsradg76","slide":2,"bbox":[80,405,1120,1]}
+{"kind":"textbox","id":"sh/qp0ril8f","slide":2,"text":"The submitted evaluation divided the full arch into left and right segments.\nThe active region was shown by changing color and transparency.\nThe paper reports continued visualization under some partial occlusions, but also positional deviations.","textPreview":"The submitted evaluation divided the full arch into left and right segments. | The active region was shown by changing color and transpar...","textChars":245,"textLines":3,"bbox":[92,440,1080,170]}
+{"kind":"notes","id":"nt/64xou9","slide":2,"text":"English practice: The submitted abstract proposes Anchor Switching. It treats several dental arch models as independent tracking targets and transfers the pose from the most stable target to an output model. The goal is to maintain AR implant guidance when part of the cast is occluded. The submitted experiment used left and right segmented arch models."}
+{"kind":"slide","id":"sl/a0qggm","slide":3,"title":"MONTHLY PROGRESS","textShapes":18}
+{"kind":"shape","id":"sh/xcri5ojm","slide":3,"bbox":[0,0,1280,18]}
+{"kind":"textbox","id":"sh/a90zat0v","slide":3,"text":"MONTHLY PROGRESS","textPreview":"MONTHLY PROGRESS","textChars":16,"textLines":1,"bbox":[72,40,280,28]}
+{"kind":"textbox","id":"sh/ba903y1g","slide":3,"text":"Changes completed this month","textPreview":"Changes completed this month","textChars":28,"textLines":1,"bbox":[72,78,1136,64]}
+{"kind":"textbox","id":"sh/o7yh8jip","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1180,670,48,24]}
+{"kind":"textbox","id":"sh/p8ri1oja","slide":3,"text":"Area","textPreview":"Area","textChars":4,"textLines":1,"bbox":[80,168,230,34]}
+{"kind":"textbox","id":"sh/2lgz690z","slide":3,"text":"Previous","textPreview":"Previous","textChars":8,"textLines":1,"bbox":[330,168,345,34]}
+{"kind":"textbox","id":"sh/n6p0ze14","slide":3,"text":"Current","textPreview":"Current","textChars":7,"textLines":1,"bbox":[720,168,450,34]}
+{"kind":"shape","id":"sh/8321k3i9","slide":3,"bbox":[68,206,1132,82]}
+{"kind":"shape","id":"sh/t4bid8je","slide":3,"bbox":[80,217,8,50]}
+{"kind":"textbox","id":"sh/lkfepkzi","slide":3,"text":"Tracker","textPreview":"Tracker","textChars":7,"textLines":1,"bbox":[105,214,195,55]}
+{"kind":"textbox","id":"sh/kj6xwfix","slide":3,"text":"VisionLib","textPreview":"VisionLib","textChars":9,"textLines":1,"bbox":[330,214,340,60]}
+{"kind":"textbox","id":"sh/zixwnahc","slide":3,"text":"Python implementation of M3T","textPreview":"Python implementation of M3T","textChars":28,"textLines":1,"bbox":[720,214,455,60]}
+{"kind":"shape","id":"sh/yhofu50r","slide":3,"bbox":[80,317,8,50]}
+{"kind":"textbox","id":"sh/xgvel0z6","slide":3,"text":"Anchor geometry","textPreview":"Anchor geometry","textChars":15,"textLines":1,"bbox":[105,314,195,55]}
+{"kind":"textbox","id":"sh/cfmdsvi1","slide":3,"text":"Left and right arch segments","textPreview":"Left and right arch segments","textChars":28,"textLines":1,"bbox":[330,314,340,60]}
+{"kind":"textbox","id":"sh/bedwzqhg","slide":3,"text":"Few-tooth groups and a smooth combined arch","textPreview":"Few-tooth groups and a smooth combined arch","textChars":43,"textLines":1,"bbox":[720,314,455,60]}
+{"kind":"shape","id":"sh/ad4vql0v","slide":3,"bbox":[68,406,1132,82]}
+{"kind":"shape","id":"sh/hczex4zq","slide":3,"bbox":[80,417,8,50]}
+{"kind":"textbox","id":"sh/wbqx4zy5","slide":3,"text":"Physical scale","textPreview":"Physical scale","textChars":14,"textLines":1,"bbox":[105,414,195,55]}
+{"kind":"textbox","id":"sh/gripgnad","slide":3,"text":"Earlier 0.04 m per unit","textPreview":"Earlier 0.04 m per unit","textChars":23,"textLines":1,"bbox":[330,414,340,60]}
+{"kind":"textbox","id":"sh/1srqpsby","slide":3,"text":"0.025 m per unit from marker-based measurement","textPreview":"0.025 m per unit from marker-based measurement","textChars":46,"textLines":1,"bbox":[720,414,455,60]}
+{"kind":"shape","id":"sh/e5g7exsn","slide":3,"bbox":[80,517,8,50]}
+{"kind":"textbox","id":"sh/f698n2ts","slide":3,"text":"Camera and overlay","textPreview":"Camera and overlay","textChars":18,"textLines":1,"bbox":[105,514,195,55]}
+{"kind":"textbox","id":"sh/s3ypcnah","slide":3,"text":"Submitted prototype","textPreview":"Submitted prototype","textChars":19,"textLines":1,"bbox":[330,514,340,60]}
+{"kind":"textbox","id":"sh/t47qlsb2","slide":3,"text":"720p calibration and corrected Unity transform","textPreview":"720p calibration and corrected Unity transform","textChars":46,"textLines":1,"bbox":[720,514,455,60]}
+{"kind":"notes","id":"nt/a0qggm","slide":3,"text":"English practice: Since submission, the implementation has changed in four ways. We replaced the tracking backend with a Python implementation of M3T. We created smaller tooth-region models and a smooth combined arch. We corrected the physical model scale using an ArUco reference. We also updated the camera calibration and the Unity coordinate conversion for the 720p setup."}
+{"kind":"slide","id":"sl/kmu2ot","slide":4,"title":"MONTHLY PROGRESS","textShapes":21}
+{"kind":"shape","id":"sh/u14netw7","slide":4,"bbox":[0,0,1280,18]}
+{"kind":"textbox","id":"sh/h4vmp8fy","slide":4,"text":"MONTHLY PROGRESS","textPreview":"MONTHLY PROGRESS","textChars":16,"textLines":1,"bbox":[72,40,280,28]}
+{"kind":"textbox","id":"sh/w3m5g3ed","slide":4,"text":"Tracking stability and recovery","textPreview":"Tracking stability and recovery","textChars":31,"textLines":1,"bbox":[72,78,1136,64]}
+{"kind":"textbox","id":"sh/j6d4ryxo","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1180,670,48,24]}
+{"kind":"textbox","id":"sh/i54nidwj","slide":4,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[90,190,54,54]}
+{"kind":"textbox","id":"sh/5sfmt8fu","slide":4,"text":"Track","textPreview":"Track","textChars":5,"textLines":1,"bbox":[152,195,165,40]}
+{"kind":"textbox","id":"sh/4765k3e9","slide":4,"text":"M3T updates the pose from the current camera frame.","textPreview":"M3T updates the pose from the current camera frame.","textChars":51,"textLines":1,"bbox":[90,265,220,145]}
+{"kind":"textbox","id":"sh/zat4fexk","slide":4,"text":">","textPreview":">","textChars":1,"textLines":1,"bbox":[325,205,38,45]}
+{"kind":"textbox","id":"sh/y9k369wz","slide":4,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[385,190,54,54]}
+{"kind":"textbox","id":"sh/kfilc7qp","slide":4,"text":"Evaluate","textPreview":"Evaluate","textChars":8,"textLines":1,"bbox":[447,195,165,40]}
+{"kind":"textbox","id":"sh/5grmlc7a","slide":4,"text":"Projected model edges are compared with image edges.","textPreview":"Projected model edges are compared with image edges.","textChars":52,"textLines":1,"bbox":[385,265,220,145]}
+{"kind":"textbox","id":"sh/it03ax8j","slide":4,"text":">","textPreview":">","textChars":1,"textLines":1,"bbox":[620,205,38,45]}
+{"kind":"textbox","id":"sh/je94j2p4","slide":4,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[680,190,54,54]}
+{"kind":"textbox","id":"sh/sj2lg7ql","slide":4,"text":"Hold","textPreview":"Hold","textChars":4,"textLines":1,"bbox":[742,195,165,40]}
+{"kind":"textbox","id":"sh/tkbmpc76","slide":4,"text":"The last reliable pose is kept during short occlusion.","textPreview":"The last reliable pose is kept during short occlusion.","textChars":54,"textLines":1,"bbox":[680,265,220,145]}
+{"kind":"textbox","id":"sh/6hk3ex8f","slide":4,"text":">","textPreview":">","textChars":1,"textLines":1,"bbox":[915,205,38,45]}
+{"kind":"textbox","id":"sh/7it4n2p0","slide":4,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[975,190,54,54]}
+{"kind":"textbox","id":"sh/8nyl4nqh","slide":4,"text":"Relock","textPreview":"Relock","textChars":6,"textLines":1,"bbox":[1037,195,165,40]}
+{"kind":"textbox","id":"sh/9o72ds72","slide":4,"text":"A wider pose search runs after sustained quality loss.","textPreview":"A wider pose search runs after sustained quality loss.","textChars":54,"textLines":1,"bbox":[975,265,220,145]}
+{"kind":"shape","id":"sh/p8zalkfe","slide":4,"bbox":[84,455,1110,112]}
+{"kind":"textbox","id":"sh/o76tsfet","slide":4,"text":"Current M3T quality logic","textPreview":"Current M3T quality logic","textChars":25,"textLines":1,"bbox":[108,478,260,35]}
+{"kind":"textbox","id":"sh/36xsjax8","slide":4,"text":"EMA smoothing reduces frame-to-frame noise. Quality checks run on a downscaled image to preserve speed and threshold consistency.","textPreview":"EMA smoothing reduces frame-to-frame noise. Quality checks run on a downscaled image to preserve speed and threshold consistency.","textChars":129,"textLines":1,"bbox":[370,475,790,70]}
+{"kind":"textbox","id":"sh/25orq5w3","slide":4,"text":"Evidence still needed: repeatable accuracy and recovery measurements under the intended demo conditions.","textPreview":"Evidence still needed: repeatable accuracy and recovery measurements under the intended demo conditions.","textChars":104,"textLines":1,"bbox":[94,605,1080,42]}
+{"kind":"notes","id":"nt/kmu2ot","slide":4,"text":"English practice: I added a quality-based recovery strategy. A short degradation does not immediately trigger a global search. Instead, the system holds the last reliable pose while continuing to test the current image. If the low-quality state continues, it starts a guarded relock and later expands the search if necessary. We still need systematic measurements under the final demo setup."}
+{"kind":"slide","id":"sl/urri17","slide":5,"title":"MONTHLY PROGRESS","textShapes":8}
+{"kind":"shape","id":"sh/szq1c7q5","slide":5,"bbox":[0,0,1280,18]}
+{"kind":"textbox","id":"sh/ryhk3m9k","slide":5,"text":"MONTHLY PROGRESS","textPreview":"MONTHLY PROGRESS","textChars":16,"textLines":1,"bbox":[72,40,280,28]}
+{"kind":"textbox","id":"sh/qx8jah8f","slide":5,"text":"Critical difference before the demo","textPreview":"Critical difference before the demo","textChars":35,"textLines":1,"bbox":[72,78,1136,64]}
+{"kind":"textbox","id":"sh/5wzi1cru","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1180,670,48,24]}
+{"kind":"textbox","id":"sh/4vq187q9","slide":5,"text":"Current single-body mode","textPreview":"Current single-body mode","textChars":24,"textLines":1,"bbox":[85,175,500,45]}
+{"kind":"textbox","id":"sh/3ah0z29o","slide":5,"text":"SINGLE_BODY_MODE is enabled in tracker_four_group.py.\nOne combined arch supplies the tracking pose.\nA-D selection changes the Unity highlight only.\nThis mode does not demonstrate dynamic anchor switching.","textPreview":"SINGLE_BODY_MODE is enabled in tracker_four_group.py. | One combined arch supplies the tracking pose. | A-D selection changes the Unity h...","textChars":204,"textLines":4,"bbox":[85,235,510,290]}
+{"kind":"shape","id":"sh/i98j6x83","slide":5,"bbox":[635,160,2,430]}
+{"kind":"textbox","id":"sh/9s32dwry","slide":5,"text":"Decision for the IEEE demo","textPreview":"Decision for the IEEE demo","textChars":26,"textLines":1,"bbox":[685,175,470,45]}
+{"kind":"textbox","id":"sh/ora1kbqd","slide":5,"text":"Use multi-anchor mode if switching itself must be shown.\nUse single-body mode if stable overlay is the priority.\nExplain the difference explicitly in either case.\nPrepare a recorded fallback for the live sequence.","textPreview":"Use multi-anchor mode if switching itself must be shown. | Use single-body mode if stable overlay is the priority. | Explain the differen...","textChars":213,"textLines":4,"bbox":[685,235,500,290]}
+{"kind":"textbox","id":"sh/ulgv2hoz","slide":5,"text":"Recommended: rehearse both modes, then select the live mode after a repeatability test.","textPreview":"Recommended: rehearse both modes, then select the live mode after a repeatability test.","textChars":87,"textLines":1,"bbox":[85,618,1080,34]}
+{"kind":"notes","id":"nt/urri17","slide":5,"text":"For the progress meeting: this is the central decision. The submitted contribution is dynamic anchor selection. The current default configuration prioritizes stability by using one combined rigid body. If the conference demonstration must visually show switching, set SINGLE_BODY_MODE to false and verify the four independent anchors. If the single-body mode is used, describe it as a post-submission implementation update and do not claim that A-D highlighting is actual switching."}
+{"kind":"slide","id":"sl/b90051","slide":6,"title":"DEMO PRACTICE","textShapes":5}
+{"kind":"shape","id":"sh/3qxgzq1c","slide":6,"bbox":[0,0,1280,18]}
+{"kind":"textbox","id":"sh/or6xsvix","slide":6,"text":"DEMO PRACTICE","textPreview":"DEMO PRACTICE","textChars":13,"textLines":1,"bbox":[72,40,280,28]}
+{"kind":"textbox","id":"sh/psfy10ji","slide":6,"text":"IEEE demo: 75-second explanation","textPreview":"IEEE demo: 75-second explanation","textChars":32,"textLines":1,"bbox":[72,78,1136,64]}
+{"kind":"textbox","id":"sh/el4fml0v","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1180,670,48,24]}
+{"kind":"shape","id":"sh/fmdgvq1g","slide":6,"bbox":[78,165,1124,400]}
+{"kind":"textbox","id":"sh/gnmxovil","slide":6,"text":"Our submitted demonstration addresses tracking loss caused by partial occlusion during AR-assisted dental implant treatment. The abstract describes Anchor Switching, which selects the most stable pose from multiple dental arch models and transfers it to the AR output. Since submission, we replaced the original tracking backend with a Python implementation of M3T and investigated tooth-region models that avoid the artificial cut surfaces of the earlier left-right segmentation. For the current stable configuration, we combine the visible tooth groups into one rigid-body model. This is an implementation update rather than anchor switching. We also corrected the physical scale, updated the 720p camera calibration, and added quality-based pose holding and relocking. I will demonstrate the current tracking behavior and explain how these changes relate to the submitted method.","textPreview":"Our submitted demonstration addresses tracking loss caused by partial occlusion during AR-assisted dental implant treatment. The abstract...","textChars":882,"textLines":1,"bbox":[112,205,1056,320]}
+{"kind":"textbox","id":"sh/1ovyxgj6","slide":6,"text":"Speak slowly: about 125 words per minute","textPreview":"Speak slowly: about 125 words per minute","textChars":40,"textLines":1,"bbox":[85,610,1080,32]}
+{"kind":"notes","id":"nt/b90051","slide":6,"text":"Practice target: 70 to 80 seconds. Stress these words: partial occlusion, Anchor Switching, since submission, implementation update, one rigid body. The sentence 'This is an implementation update rather than anchor switching' is important if SINGLE_BODY_MODE remains enabled."}
+{"kind":"slide","id":"sl/bx8f44","slide":7,"title":"DEMO PRACTICE","textShapes":14}
+{"kind":"shape","id":"sh/md8bytwb","slide":7,"bbox":[0,0,1280,18]}
+{"kind":"textbox","id":"sh/9gzat8f2","slide":7,"text":"DEMO PRACTICE","textPreview":"DEMO PRACTICE","textChars":13,"textLines":1,"bbox":[72,40,280,28]}
+{"kind":"textbox","id":"sh/ofqt03eh","slide":7,"text":"Submitted method and current demonstration","textPreview":"Submitted method and current demonstration","textChars":42,"textLines":1,"bbox":[72,78,1136,64]}
+{"kind":"textbox","id":"sh/bi1svix8","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1180,670,48,24]}
+{"kind":"textbox","id":"sh/ah8b2dwn","slide":7,"text":"Suggested transition","textPreview":"Suggested transition","textChars":20,"textLines":1,"bbox":[88,172,300,38]}
+{"kind":"shape","id":"sh/xkjaxsfy","slide":7,"bbox":[82,225,1115,150]}
+{"kind":"textbox","id":"sh/wjat4net","slide":7,"text":"Since the abstract submission, we revised the implementation to improve the stability of the live demonstration. The objective remains the same, but the current stable mode uses one combined rigid-body model instead of dynamically switching between independent anchors.","textPreview":"Since the abstract submission, we revised the implementation to improve the stability of the live demonstration. The objective remains th...","textChars":269,"textLines":1,"bbox":[112,245,1050,115]}
+{"kind":"textbox","id":"sh/rmxsjexo","slide":7,"text":"Use this structure for each difference","textPreview":"Use this structure for each difference","textChars":38,"textLines":1,"bbox":[88,410,440,38]}
+{"kind":"textbox","id":"sh/qlorq9w3","slide":7,"text":"1. Submitted","textPreview":"1. Submitted","textChars":12,"textLines":1,"bbox":[88,475,240,38]}
+{"kind":"textbox","id":"sh/8r6l8nat","slide":7,"text":"Multiple independent models and dynamic selection.","textPreview":"Multiple independent models and dynamic selection.","textChars":50,"textLines":1,"bbox":[88,525,235,88]}
+{"kind":"textbox","id":"sh/tsf2h8be","slide":7,"text":"2. Current","textPreview":"2. Current","textChars":10,"textLines":1,"bbox":[368,475,240,38]}
+{"kind":"textbox","id":"sh/6po36ds3","slide":7,"text":"M3T with one combined model in the stable mode.","textPreview":"M3T with one combined model in the stable mode.","textChars":47,"textLines":1,"bbox":[368,525,235,88]}
+{"kind":"textbox","id":"sh/7qxkfito","slide":7,"text":"3. Reason","textPreview":"3. Reason","textChars":9,"textLines":1,"bbox":[648,475,240,38]}
+{"kind":"textbox","id":"sh/gvqlcna5","slide":7,"text":"All visible contours constrain one pose estimate.","textPreview":"All visible contours constrain one pose estimate.","textChars":49,"textLines":1,"bbox":[648,525,235,88]}
+{"kind":"textbox","id":"sh/hgz2lsbq","slide":7,"text":"4. Scope","textPreview":"4. Scope","textChars":8,"textLines":1,"bbox":[928,475,240,38]}
+{"kind":"textbox","id":"sh/ut83adsz","slide":7,"text":"A technical demo, not a clinical validation.","textPreview":"A technical demo, not a clinical validation.","textChars":44,"textLines":1,"bbox":[928,525,235,88]}
+{"kind":"notes","id":"nt/bx8f44","slide":7,"text":"If multi-anchor mode is restored and verified before the conference, revise the current-mode statement. Otherwise keep this wording. Do not describe manual A-D highlighting as dynamic anchor switching. The abstract itself already limits the claim to certain partial occlusion conditions and states that anchor design still needs improvement."}
+{"kind":"slide","id":"sl/yatc4f","slide":8,"title":"DEMO PRACTICE","textShapes":18}
+{"kind":"shape","id":"sh/143epcva","slide":8,"bbox":[0,0,1280,18]}
+{"kind":"textbox","id":"sh/ehsvuxwj","slide":8,"text":"DEMO PRACTICE","textPreview":"DEMO PRACTICE","textChars":13,"textLines":1,"bbox":[72,40,280,28]}
+{"kind":"textbox","id":"sh/f21wn2d4","slide":8,"text":"Likely questions and concise answers","textPreview":"Likely questions and concise answers","textChars":36,"textLines":1,"bbox":[72,78,1136,64]}
+{"kind":"textbox","id":"sh/o7ud07el","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1180,670,48,24]}
+{"kind":"textbox","id":"sh/p83etcv6","slide":8,"text":"Q1","textPreview":"Q1","textChars":2,"textLines":1,"bbox":[78,165,52,35]}
+{"kind":"textbox","id":"sh/25cvyhwv","slide":8,"text":"Is the current mode Anchor Switching?","textPreview":"Is the current mode Anchor Switching?","textChars":37,"textLines":1,"bbox":[140,165,430,35]}
+{"kind":"textbox","id":"sh/36lwrmdg","slide":8,"text":"No. The stable mode uses one combined rigid body. Multi-anchor mode remains available for evaluation.","textPreview":"No. The stable mode uses one combined rigid body. Multi-anchor mode remains available for evaluation.","textChars":101,"textLines":1,"bbox":[595,165,600,62]}
+{"kind":"shape","id":"sh/cbux4rex","slide":8,"bbox":[138,237,1055,1]}
+{"kind":"textbox","id":"sh/dcnexwvi","slide":8,"text":"Q2","textPreview":"Q2","textChars":2,"textLines":1,"bbox":[78,257,52,35]}
+{"kind":"textbox","id":"sh/1snu9on2","slide":8,"text":"Why change the submitted design?","textPreview":"Why change the submitted design?","textChars":32,"textLines":1,"bbox":[140,257,430,35]}
+{"kind":"textbox","id":"sh/0red0jmh","slide":8,"text":"Independent small models could drift, while the combined model uses more visible contour information.","textPreview":"Independent small models could drift, while the combined model uses more visible contour information.","textChars":101,"textLines":1,"bbox":[595,257,600,62]}
+{"kind":"shape","id":"sh/f6lc7e5w","slide":8,"bbox":[138,329,1055,1]}
+{"kind":"textbox","id":"sh/e5cby94b","slide":8,"text":"Q3","textPreview":"Q3","textChars":2,"textLines":1,"bbox":[78,349,52,35]}
+{"kind":"textbox","id":"sh/pwnudony","slide":8,"text":"What improved after submission?","textPreview":"What improved after submission?","textChars":31,"textLines":1,"bbox":[140,349,430,35]}
+{"kind":"textbox","id":"sh/oved43md","slide":8,"text":"We corrected scale and calibration, revised the model geometry, and added quality-based recovery.","textPreview":"We corrected scale and calibration, revised the model geometry, and added quality-based recovery.","textChars":97,"textLines":1,"bbox":[595,349,600,62]}
+{"kind":"shape","id":"sh/nu5cby58","slide":8,"bbox":[138,421,1055,1]}
+{"kind":"textbox","id":"sh/2twv2t4n","slide":8,"text":"Q4","textPreview":"Q4","textChars":2,"textLines":1,"bbox":[78,441,52,35]}
+{"kind":"textbox","id":"sh/503u14nu","slide":8,"text":"How do you evaluate accuracy?","textPreview":"How do you evaluate accuracy?","textChars":29,"textLines":1,"bbox":[140,441,430,35]}
+{"kind":"textbox","id":"sh/4zatszm9","slide":8,"text":"We log translation and rotation error against a registered ArUco reference.","textPreview":"We log translation and rotation error against a registered ArUco reference.","textChars":75,"textLines":1,"bbox":[595,441,600,62]}
+{"kind":"shape","id":"sh/wjed8zu5","slide":8,"bbox":[138,513,1055,1]}
+{"kind":"textbox","id":"sh/hknuh4vq","slide":8,"text":"Q5","textPreview":"Q5","textChars":2,"textLines":1,"bbox":[78,533,52,35]}
+{"kind":"textbox","id":"sh/uhwv6pwz","slide":8,"text":"Is it clinically validated?","textPreview":"Is it clinically validated?","textChars":27,"textLines":1,"bbox":[140,533,430,35]}
+{"kind":"textbox","id":"sh/vi5cfudk","slide":8,"text":"No. This is a technical demonstration, and clinical validation remains future work.","textPreview":"No. This is a technical demonstration, and clinical validation remains future work.","textChars":83,"textLines":1,"bbox":[595,533,600,62]}
+{"kind":"notes","id":"nt/yatc4f","slide":8,"text":"Answer pattern: one direct sentence, one technical detail if requested, then return to the live demonstration. Do not blur the distinction between Anchor Switching and single-body tracking. If asked about the abstract, say: The abstract describes the submitted multi-anchor method. The stable configuration shown here is a post-submission implementation update that uses one combined rigid body."}

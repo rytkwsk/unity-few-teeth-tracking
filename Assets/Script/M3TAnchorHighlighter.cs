@@ -43,10 +43,16 @@ public class M3TAnchorHighlighter : MonoBehaviour
 
         var aIsActive = active == "A";
         if (anchorAVisual != null)
+        {
+            anchorAVisual.SetOverlayVisible(aIsActive);
             anchorAVisual.SetAnchorHighlight(aIsActive, anchorAActiveColor, anchorAInactiveColor,
                 activeOutlineWidth, inactiveOutlineWidth);
+        }
         if (anchorBVisual != null)
+        {
+            anchorBVisual.SetOverlayVisible(!aIsActive);
             anchorBVisual.SetAnchorHighlight(!aIsActive, anchorBActiveColor, anchorBInactiveColor,
                 activeOutlineWidth, inactiveOutlineWidth);
+        }
     }
 }

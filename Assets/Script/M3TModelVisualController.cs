@@ -58,6 +58,34 @@ public class M3TModelVisualController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Anchor Switching用の純粋な表示/非表示。SetVisualsEnabled(false) は
+    /// 編集用に元マテリアルへ戻すため、不透明な歯モデルが出てしまう。
+    /// 非アクティブアンカーにはこちらを使い、全Rendererを描画しない。
+    /// </summary>
+    public void SetOverlayVisible(bool visible)
+    {
+        if (modelRenderers.Count == 0)
+            CacheRenderers();
+
+        if (visible)
+        {
+            ApplyTransparentLook();
+            foreach (var outlineObject in outlineObjects)
+                if (outlineObject != null)
+                    outlineObject.SetActive(true);
+        }
+        else
+        {
+            foreach (var renderer in modelRenderers)
+                if (renderer != null)
+                    renderer.enabled = false;
+            foreach (var outlineObject in outlineObjects)
+                if (outlineObject != null)
+                    outlineObject.SetActive(false);
+        }
+    }
+
     void CacheRenderers()
     {
         modelRenderers.Clear();

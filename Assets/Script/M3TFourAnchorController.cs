@@ -53,11 +53,12 @@ public class M3TFourAnchorController : MonoBehaviour
         lastApplied = active;
 
         // "ALL": 単体ボディモード（歯列全体を 1 ボディで追跡）のとき tracker が送る。全グループを強調表示。
+        // "A+D" のような複数キー（統合モード）は、含まれる歯群をすべて強調表示する。
         bool all = active == "ALL";
-        Apply(anchorAVisual, all || active == "A", anchorAActiveColor, anchorAInactiveColor);
-        Apply(anchorBVisual, all || active == "B", anchorBActiveColor, anchorBInactiveColor);
-        Apply(anchorCVisual, all || active == "C", anchorCActiveColor, anchorCInactiveColor);
-        Apply(anchorDVisual, all || active == "D", anchorDActiveColor, anchorDInactiveColor);
+        Apply(anchorAVisual, all || active.Contains("A"), anchorAActiveColor, anchorAInactiveColor);
+        Apply(anchorBVisual, all || active.Contains("B"), anchorBActiveColor, anchorBInactiveColor);
+        Apply(anchorCVisual, all || active.Contains("C"), anchorCActiveColor, anchorCInactiveColor);
+        Apply(anchorDVisual, all || active.Contains("D"), anchorDActiveColor, anchorDInactiveColor);
     }
 
     void Apply(M3TModelVisualController vis, bool isActive, Color activeCol, Color inactiveCol)

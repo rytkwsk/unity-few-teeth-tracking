@@ -36,6 +36,15 @@ public class M3TDemoUI : MonoBehaviour
     Rect windowRect;
     string lastAction = "Press 1 to launch the camera and tracker.";
     string forcedAnchor = "";
+    // 0 = baseline (full arch only), 1 = best single group, 2 = fusion of all visible groups (tracker default)
+    int switchingMode = 2;
+    static readonly string[] SwitchingCommands = { "off", "on", "fusion" };
+    static readonly string[] SwitchingLabels =
+    {
+        "Anchor Switching: OFF  (baseline, full arch only)  - click for best-one",
+        "Anchor Switching: BEST-ONE  (highest-scoring group)  - click for fusion",
+        "Anchor Switching: FUSION  (all visible groups)  - click for baseline",
+    };
     bool showAdvanced;
     GUIStyle titleStyle, labelStyle, statusStyle, barStyle;
     Texture2D whiteTex;
@@ -110,6 +119,20 @@ public class M3TDemoUI : MonoBehaviour
         GUI.backgroundColor = new Color(0.75f, 0.35f, 0.3f);
         if (GUILayout.Button("Stop tracking (back to alignment)", GUILayout.Height(28)))
             Send("stop", "Back to alignment mode.");
+        GUI.backgroundColor = Color.white;
+
+        // ── anchor switching on/off (comparison baseline) ───────────────────
+        GUILayout.Space(6);
+        GUI.backgroundColor = switchingMode == 0 ? new Color(0.55f, 0.35f, 0.15f)
+                            : switchingMode == 1 ? new Color(0.15f, 0.35f, 0.6f) : new Color(0.15f, 0.5f, 0.35f);
+        if (GUILayout.Button(SwitchingLabels[switchingMode], GUILayout.Height(28)))
+        {
+            switchingMode = (switchingMode + 1) % 3;
+            Send("anchor_switching:" + SwitchingCommands[switchingMode],
+                 switchingMode == 0 ? "Baseline: only the full arch supplies the pose (logged as anchor_switching=0)."
+               : switchingMode == 1 ? "Best-one: the highest-scoring visible group takes over (logged as 1)."
+                                    : "Fusion: all visible groups are combined into one pose (logged as 2).");
+        }
         GUI.backgroundColor = Color.white;
 
         // ── anchor override ─────────────────────────────────────────────────
