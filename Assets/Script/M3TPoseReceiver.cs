@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using UnityEngine;
@@ -19,6 +20,21 @@ public class M3TPosePacket
     // 各アンカーの適合度 [F, A, B, C, D]（0..1）。旧トラッカーからは来ない。
     public string pose_anchor;
     public float[] quality;
+    // トラッカーが M3T に渡している内部パラメータ [fx, fy, cx, cy] と画像サイズ [w, h]。
+    // M3TCameraIntrinsics がこれに合わせて投影行列を作る。旧トラッカーからは来ない。
+    public float[] K;
+    public int[] image_size;
+    // ArUco 基準との実測誤差（tracker_four_group.py が送る。旧トラッカーからは来ず既定値のまま）。
+    public bool marker_registered;
+    public bool marker_visible;
+    public bool marker_valid;
+    public float marker_err_mm;
+    public float marker_err_deg;
+    public int marker_samples;
+    public string marker_msg;
+    // 回転不確か警告: 統合（回転固定）が長い／歯列が大きく動いた／HOLD 中／F 復帰直後（tracker_four_group.py）。
+    public bool rotation_uncertain;
+    public string rotation_uncertain_reason;
 }
 
 public class M3TPoseReceiver : MonoBehaviour
@@ -55,31 +71,107 @@ public class M3TPoseReceiver : MonoBehaviour
     public string PoseAnchor { get; private set; } = "";
     // [F, A, B, C, D] の順。未受信なら長さ 0。
     public float[] Quality { get; private set; } = new float[0];
+    // トラッカーの内部パラメータ [fx, fy, cx, cy] と画像サイズ [w, h]。未受信なら null。
+    // 値が変わるたびに IntrinsicsVersion が増える（M3TCameraIntrinsics が変化を検知する）。
+    public float[] CameraK { get; private set; }
+    public int[] ImageSize { get; private set; }
+    public int IntrinsicsVersion { get; private set; }
+    // ArUco 基準との実測誤差。MarkerValid のときだけ ErrMm/ErrDeg が意味を持つ。
+    public bool MarkerRegistered { get; private set; }
+    public bool MarkerVisible { get; private set; }
+    public bool MarkerValid { get; private set; }
+    public float MarkerErrMm { get; private set; }
+    public float MarkerErrDeg { get; private set; }
+    public int MarkerSamples { get; private set; }
+    public string MarkerMessage { get; private set; } = "";
+    // 出力姿勢の回転が古い可能性があるとき true（遮蔽中は回転を固定しているため）。理由は表示用の英文。
+    public bool RotationUncertain { get; private set; }
+    public string RotationUncertainReason { get; private set; } = "";
+
+    // bind に失敗しても無効化せず、この間隔で再試行する（ポートを掴んでいた古いソケットが解放されれば自動復旧）。
+    const float BindRetryIntervalSec = 1f;
+    float nextBindAttemptTime;
+    bool bindErrorLogged;
 
     void Start()
     {
         if (target == null)
             target = transform;
+        TryStartReceiver();
+    }
 
+    void OnEnable()
+    {
+#if UNITY_EDITOR
+        // Play 中にスクリプトが再コンパイルされると（Preferences の Script Changes While Playing が
+        // "Recompile And Continue Playing" の場合）、OnDisable を経ずに udpClient の参照だけが失われ、
+        // ソケットがエディタのプロセス内でポートを掴んだまま残る（2026-10-09: 以降の Play が全て
+        // "could not listen on UDP port 5005" になった）。再読み込み直前に必ず閉じる。
+        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += StopReceiver;
+#endif
+    }
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+    [DllImport("kernel32.dll", SetLastError = true)]
+    static extern bool SetHandleInformation(IntPtr hObject, uint dwMask, uint dwFlags);
+    const uint HANDLE_FLAG_INHERIT = 0x1;
+#endif
+
+    // M3TProcessController は Python トラッカーを UseShellExecute=false（＝ハンドル継承あり）で起動するため、
+    // このソケットのハンドルがトラッカー（cmd/python）に複製される。トラッカーが終了処理で固まって残ると
+    // （2026-10-09: カメラドライバ待ちで HasExited=True のまま消えず、PC 再起動まで解放されなかった）、
+    // 複製ハンドルがポート 5005 を掴み続け、以降の Play が全て bind に失敗した。継承不可にして断ち切る。
+    static void MakeNonInheritable(Socket socket)
+    {
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        try
+        {
+            if (!SetHandleInformation(socket.Handle, HANDLE_FLAG_INHERIT, 0))
+                Debug.LogWarning($"M3TPoseReceiver: SetHandleInformation failed ({Marshal.GetLastWin32Error()}); socket may be inherited by the tracker process.");
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"M3TPoseReceiver: could not make the socket non-inheritable: {e.Message}");
+        }
+#endif
+    }
+
+    bool TryStartReceiver()
+    {
         try
         {
             udpClient = new UdpClient(port);
+            MakeNonInheritable(udpClient.Client);
         }
         catch (SocketException e)
         {
-            Debug.LogError($"M3TPoseReceiver could not listen on UDP port {port}. Stop any other running Unity play session or app using this port, then play again. {e.Message}");
-            enabled = false;
-            return;
+            udpClient = null;
+            nextBindAttemptTime = Time.unscaledTime + BindRetryIntervalSec;
+            if (!bindErrorLogged)
+            {
+                Debug.LogError($"M3TPoseReceiver could not listen on UDP port {port} (retrying every {BindRetryIntervalSec:0} s). " +
+                               $"If this persists, another Unity play session/app holds the port; restarting the Unity Editor frees it. {e.Message}");
+                bindErrorLogged = true;
+            }
+            return false;
         }
 
+        if (bindErrorLogged)
+            Debug.Log($"M3TPoseReceiver: listening on UDP port {port} (recovered).");
+        bindErrorLogged = false;
         running = true;
         receiveThread = new Thread(ReceiveLoop);
         receiveThread.IsBackground = true;
         receiveThread.Start();
+        return true;
     }
 
     void Update()
     {
+        // Start 時の bind 失敗、またはスクリプト再読み込み後（フィールドが失われ Start は呼ばれない）に受信を再開する
+        if (udpClient == null && Time.unscaledTime >= nextBindAttemptTime)
+            TryStartReceiver();
+
         M3TPosePacket packet = null;
         lock (packetLock)
         {
@@ -95,6 +187,26 @@ public class M3TPoseReceiver : MonoBehaviour
             PoseAnchor = packet.pose_anchor;
         if (packet != null && packet.quality != null && packet.quality.Length > 0)
             Quality = packet.quality;
+        if (packet != null && packet.K != null && packet.K.Length == 4
+            && packet.image_size != null && packet.image_size.Length == 2
+            && !SameIntrinsics(packet.K, packet.image_size))
+        {
+            CameraK = packet.K;
+            ImageSize = packet.image_size;
+            IntrinsicsVersion++;
+        }
+        if (packet != null)
+        {
+            MarkerRegistered = packet.marker_registered;
+            MarkerVisible = packet.marker_visible;
+            MarkerValid = packet.marker_valid;
+            MarkerErrMm = packet.marker_err_mm;
+            MarkerErrDeg = packet.marker_err_deg;
+            MarkerSamples = packet.marker_samples;
+            MarkerMessage = packet.marker_msg ?? "";
+            RotationUncertain = packet.rotation_uncertain;
+            RotationUncertainReason = packet.rotation_uncertain_reason ?? "";
+        }
 
         if (!applyPose || packet == null || packet.pose_cv == null)
             return;
@@ -114,6 +226,18 @@ public class M3TPoseReceiver : MonoBehaviour
         rotation = rotation * Quaternion.Euler(rotationOffsetEuler);
 
         target.SetPositionAndRotation(position, rotation);
+    }
+
+    bool SameIntrinsics(float[] k, int[] size)
+    {
+        if (CameraK == null || ImageSize == null)
+            return false;
+        if (size[0] != ImageSize[0] || size[1] != ImageSize[1])
+            return false;
+        for (int i = 0; i < 4; i++)
+            if (Mathf.Abs(k[i] - CameraK[i]) > 1e-3f)
+                return false;
+        return true;
     }
 
     void ReceiveLoop()
@@ -228,6 +352,9 @@ public class M3TPoseReceiver : MonoBehaviour
 
     void OnDisable()
     {
+#if UNITY_EDITOR
+        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload -= StopReceiver;
+#endif
         StopReceiver();
     }
 

@@ -46,6 +46,8 @@ public class M3TDemoUI : MonoBehaviour
         "Anchor Switching: FUSION  (all visible groups)  - click for baseline",
     };
     bool showAdvanced;
+    Vector2 scrollPos;
+    string lastMarkerMessage = "";
     GUIStyle titleStyle, labelStyle, statusStyle, barStyle;
     Texture2D whiteTex;
 
@@ -54,6 +56,18 @@ public class M3TDemoUI : MonoBehaviour
         if (processController == null) processController = GetComponent<M3TProcessController>();
         if (poseReceiver == null) poseReceiver = GetComponent<M3TPoseReceiver>();
         windowRect = new Rect(Mathf.Max(8, Screen.width - 400), 12, 388, Mathf.Min(720, Screen.height - 24));
+    }
+
+    void Update()
+    {
+        // トラッカーが返すマーカー登録結果（拒否理由・ばらつき）を状態欄に出す。
+        // OnGUI の Layout/Repaint の間で文字列が変わらないよう Update で反映する。
+        if (poseReceiver != null && poseReceiver.MarkerMessage != lastMarkerMessage)
+        {
+            lastMarkerMessage = poseReceiver.MarkerMessage;
+            if (!string.IsNullOrEmpty(lastMarkerMessage))
+                lastAction = lastMarkerMessage;
+        }
     }
 
     void OnGUI()
@@ -71,8 +85,18 @@ public class M3TDemoUI : MonoBehaviour
         var q = poseReceiver != null ? poseReceiver.Quality : new float[0];
 
         // ── status ───────────────────────────────────────────────────────────
+        scrollPos = GUILayout.BeginScrollView(scrollPos);
         GUILayout.Label($"Tracker: {(running ? "Running" : "Stopped")}     Mode: {mode}", titleStyle);
         GUILayout.Label($"Pose source: {AnchorName(poseAnchor)}     Highlight: {AnchorName(highlight)}", labelStyle);
+
+        // 回転不確か警告。統合中は回転を F 離脱時のまま固定するので、遮蔽中に模型が回ると出力の回転が古いまま
+        // 「良好」に見える（静かな誤り）。その間と F 復帰直後は赤で明示し、人に重畳の確認を促す。
+        if (poseReceiver != null && poseReceiver.RotationUncertain)
+        {
+            GUI.backgroundColor = new Color(0.85f, 0.15f, 0.15f);
+            GUILayout.Box("ROTATION UNCERTAIN - " + poseReceiver.RotationUncertainReason, statusStyle, GUILayout.MinHeight(30));
+            GUI.backgroundColor = Color.white;
+        }
 
         GUILayout.Space(4);
         GUILayout.Label("Anchor fit quality", titleStyle);
@@ -90,6 +114,33 @@ public class M3TDemoUI : MonoBehaviour
                 GUI.DrawTexture(new Rect(r.x, r.y + 3, r.width * v, 10), whiteTex, ScaleMode.StretchToFill, false, 0, AnchorColors[i], 0, 0);
                 GUILayout.Label(v.ToString("0.00"), labelStyle, GUILayout.Width(36));
             }
+        }
+
+        // ── objective accuracy (ArUco reference) ─────────────────────────────
+        // fit quality は「輪郭がエッジに乗っている割合」の代理指標で精度ではない。ここは台座の ArUco から
+        // 予測した歯列姿勢と追跡姿勢の差（mm / deg）。登録は追跡が合っている瞬間に視点を変えて 3 回以上。
+        GUILayout.Space(4);
+        GUILayout.Label("Marker error (ArUco reference)", titleStyle);
+        string markerText;
+        if (poseReceiver == null)
+            markerText = "-";
+        else if (!poseReceiver.MarkerRegistered)
+            markerText = poseReceiver.MarkerVisible
+                ? "Not registered.  Marker: VISIBLE  -> if the overlay matches, press Register (3+ different views)."
+                : "Not registered.  Marker: NOT visible  -> turn the board toward the camera before pressing Register.";
+        else if (!poseReceiver.MarkerVisible)
+            markerText = $"Marker not visible   (samples {poseReceiver.MarkerSamples})";
+        else if (!poseReceiver.MarkerValid)
+            markerText = $"Registered; start tracking to measure   (samples {poseReceiver.MarkerSamples})";
+        else
+            markerText = $"{poseReceiver.MarkerErrMm:0.0} mm  /  {poseReceiver.MarkerErrDeg:0.0} deg   (samples {poseReceiver.MarkerSamples})";
+        GUILayout.Label(markerText, labelStyle);
+        using (new GUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("Register marker", GUILayout.Height(24)))
+                Send("marker_register", "Registering the current pose against the marker...");
+            if (GUILayout.Button("Undo last", GUILayout.Height(24)))
+                Send("marker_undo", "Undoing the last marker sample...");
         }
 
         // ── main steps ───────────────────────────────────────────────────────
@@ -176,6 +227,7 @@ public class M3TDemoUI : MonoBehaviour
         }
         GUI.enabled = true;
 
+        GUILayout.EndScrollView();
         GUI.DragWindow(new Rect(0, 0, 10000, 22));
     }
 

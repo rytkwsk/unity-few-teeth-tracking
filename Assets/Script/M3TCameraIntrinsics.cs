@@ -16,6 +16,12 @@ public class M3TCameraIntrinsics : MonoBehaviour
     // レターボックス（黒帯）で表示する。false だと Unity がビュー全体に引き延ばして描くため
     // 映像も重畳も横に伸びてぼけたように見える。
     public bool fitViewport = true;
+    // 実行中はトラッカーから届く K（M3T に渡したのと同じ歪み補正後の値）で上の fx/fy/cx/cy/画像サイズを
+    // 上書きする。手書きの値は再キャリブのたびにずれるため（2026-10-09: fx 1001.6 vs 1146.6 で重畳が
+    // 画像端で最大 77 px 外れた）。インスペクタの値はトラッカー未接続時の初期値としてだけ使われる。
+    public bool syncFromTracker = true;
+    public M3TPoseReceiver poseReceiver;
+    int appliedIntrinsicsVersion = -1;
 
     void Awake()
     {
@@ -24,7 +30,29 @@ public class M3TCameraIntrinsics : MonoBehaviour
 
     void LateUpdate()
     {
+        SyncFromTracker();
         ApplyViewportRect();
+    }
+
+    void SyncFromTracker()
+    {
+        if (!syncFromTracker || !Application.isPlaying)
+            return;
+        if (poseReceiver == null)
+            poseReceiver = FindObjectOfType<M3TPoseReceiver>();
+        if (poseReceiver == null || poseReceiver.CameraK == null || poseReceiver.ImageSize == null)
+            return;
+        if (poseReceiver.IntrinsicsVersion == appliedIntrinsicsVersion)
+            return;
+
+        var k = poseReceiver.CameraK;
+        var size = poseReceiver.ImageSize;
+        Debug.Log($"M3TCameraIntrinsics: tracker K を適用 fx={k[0]:F1} fy={k[1]:F1} cx={k[2]:F1} cy={k[3]:F1} " +
+                  $"{size[0]}x{size[1]}（シーン設定値 fx={fx:F1} fy={fy:F1} cx={cx:F1} cy={cy:F1} {imageWidth}x{imageHeight} を上書き）");
+        fx = k[0]; fy = k[1]; cx = k[2]; cy = k[3];
+        imageWidth = size[0]; imageHeight = size[1];
+        appliedIntrinsicsVersion = poseReceiver.IntrinsicsVersion;
+        Apply();
     }
 
     void ApplyViewportRect()
