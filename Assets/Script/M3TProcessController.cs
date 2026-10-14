@@ -90,9 +90,16 @@ public class M3TProcessController : MonoBehaviour
             return;
         }
 
-        File.WriteAllText(logPath, $"Starting M3T tracker at {DateTime.Now}\n");
-
         var info = BuildProcessStartInfo();
+
+        var startupNote = useCondaActivate
+            ? $"conda env={condaEnvironmentName} ({resolvedCondaLauncher})"
+            : $"python={resolvedPythonExe}";
+        var pym3tDir = info.EnvironmentVariables["PYM3T_DIR"];
+        if (string.IsNullOrEmpty(pym3tDir))
+            pym3tDir = "(未設定: ../pym3t を使用)";
+        File.WriteAllText(logPath,
+            $"Starting M3T tracker at {DateTime.Now}\n{startupNote}\nPYM3T_DIR={pym3tDir}\nscript={resolvedScriptPath}\n");
 
         try
         {
@@ -111,7 +118,7 @@ public class M3TProcessController : MonoBehaviour
             process.BeginErrorReadLine();
 
             lastStatus = "Running";
-            UnityEngine.Debug.Log($"M3T tracker process started. Log: {logPath}");
+            UnityEngine.Debug.Log($"M3T tracker process started ({startupNote}, PYM3T_DIR={pym3tDir}). Log: {logPath}");
 
             if (startTrackingInPython)
                 StartCoroutine(SendCommandRepeatedly("start", 30, 0.1f));
@@ -173,8 +180,77 @@ public class M3TProcessController : MonoBehaviour
         if (headlessTracker)
             info.EnvironmentVariables["M3T_HEADLESS"] = "1";
 
+        ForwardUserEnvironment(info);
+
         return info;
     }
+
+    // Unity（と Unity Hub）は起動時点の環境変数しか持たない。setx などで後から登録した
+    // M3T_* / PYM3T_DIR は、Unity Hub ごと再起動しないと子プロセスに渡らず、
+    // 「conda 環境 pym3t が見つからない」「Debug 版 pyd を読んで重い」になる。
+    // ここでレジストリ（ユーザー → マシン）の値を直接読んで補うことで、再起動なしで反映させる。
+    static readonly string[] ForwardedPrefixes = { "M3T_", "PYM3T_" };
+
+    static void ForwardUserEnvironment(ProcessStartInfo info)
+    {
+        foreach (var target in new[] { EnvironmentVariableTarget.User, EnvironmentVariableTarget.Machine })
+        {
+            IDictionary variables;
+            try
+            {
+                variables = Environment.GetEnvironmentVariables(target);
+            }
+            catch (Exception)
+            {
+                continue;
+            }
+            foreach (DictionaryEntry entry in variables)
+            {
+                var key = entry.Key as string;
+                var value = entry.Value as string;
+                if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value))
+                    continue;
+                if (!IsForwardedKey(key))
+                    continue;
+                if (!string.IsNullOrEmpty(info.EnvironmentVariables[key]))
+                    continue; // プロセス環境（または上の優先度）に既にある
+                info.EnvironmentVariables[key] = value;
+            }
+        }
+    }
+
+    static bool IsForwardedKey(string key)
+    {
+        foreach (var prefix in ForwardedPrefixes)
+            if (key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                return true;
+        return false;
+    }
+
+    // プロセス環境 → ユーザー環境変数 → マシン環境変数 の順で探す（上記と同じ理由）。
+    static string GetSetting(string name)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        if (!string.IsNullOrWhiteSpace(value))
+            return value;
+        foreach (var target in new[] { EnvironmentVariableTarget.User, EnvironmentVariableTarget.Machine })
+        {
+            try
+            {
+                value = Environment.GetEnvironmentVariable(name, target);
+            }
+            catch (Exception)
+            {
+                continue;
+            }
+            if (!string.IsNullOrWhiteSpace(value))
+                return value;
+        }
+        return null;
+    }
+
+    public string ResolvedCondaEnvironment => condaEnvironmentName;
+    public string ResolvedPym3tDir => GetSetting("PYM3T_DIR") ?? "(未設定: ../pym3t)";
 
     void ResolveRuntimePaths()
     {
@@ -182,15 +258,15 @@ public class M3TProcessController : MonoBehaviour
         resolvedWorkingDirectory = ResolvePath(projectRoot, workingDirectory);
         resolvedScriptPath = ResolvePath(resolvedWorkingDirectory, scriptPath);
 
-        var pythonFromEnvironment = Environment.GetEnvironmentVariable("M3T_PYTHON_EXE");
+        var pythonFromEnvironment = GetSetting("M3T_PYTHON_EXE");
         resolvedPythonExe = ResolvePath(projectRoot,
             !string.IsNullOrWhiteSpace(pythonFromEnvironment) ? pythonFromEnvironment : pythonExe);
 
-        var condaEnvironment = Environment.GetEnvironmentVariable("M3T_CONDA_ENV");
+        var condaEnvironment = GetSetting("M3T_CONDA_ENV");
         if (!string.IsNullOrWhiteSpace(condaEnvironment))
             condaEnvironmentName = condaEnvironment.Trim();
 
-        var condaFromEnvironment = Environment.GetEnvironmentVariable("M3T_CONDA_BAT");
+        var condaFromEnvironment = GetSetting("M3T_CONDA_BAT");
         var configuredConda = !string.IsNullOrWhiteSpace(condaFromEnvironment)
             ? condaFromEnvironment : condaBat;
         resolvedCondaLauncher = FindCondaLauncher(configuredConda);
