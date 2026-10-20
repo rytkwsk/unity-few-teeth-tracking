@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -38,6 +39,12 @@ public class M3TProcessController : MonoBehaviour
     string resolvedCondaLauncher = "";
     readonly object logLock = new object();
 
+    // Windows は cmd.exe + conda.bat activate で起動する。macOS / Linux は conda 環境の python を直接起動する
+    // （activate 用のシェルが無く、GUI から起動した Unity にはシェルの環境変数も渡らないため）。
+    static bool IsWindowsHost => Application.platform == RuntimePlatform.WindowsEditor
+                                 || Application.platform == RuntimePlatform.WindowsPlayer;
+    bool UseCondaActivate => useCondaActivate && IsWindowsHost;
+
     public bool IsRunning => process != null && !process.HasExited;
     public string LastStatus => lastStatus;
     public string LastError => lastError;
@@ -66,15 +73,18 @@ public class M3TProcessController : MonoBehaviour
 
         ResolveRuntimePaths();
 
-        if (useCondaActivate && string.IsNullOrEmpty(resolvedCondaLauncher))
+        if (UseCondaActivate && string.IsNullOrEmpty(resolvedCondaLauncher))
         {
             ReportError("Conda was not found. Set M3T_CONDA_BAT or condaBat in the Inspector.");
             return;
         }
 
-        if (!useCondaActivate && !File.Exists(resolvedPythonExe))
+        if (!UseCondaActivate && !File.Exists(resolvedPythonExe))
         {
-            ReportError($"M3T python executable was not found: {resolvedPythonExe}");
+            ReportError(IsWindowsHost
+                ? $"M3T python executable was not found: {resolvedPythonExe}"
+                : $"M3T python was not found: '{resolvedPythonExe}'. Run tools/setup_mac.sh in few_teeth_tracking, "
+                  + "or set M3T_PYTHON_EXE in few_teeth_tracking/m3t_local.env");
             return;
         }
 
@@ -92,7 +102,7 @@ public class M3TProcessController : MonoBehaviour
 
         var info = BuildProcessStartInfo();
 
-        var startupNote = useCondaActivate
+        var startupNote = UseCondaActivate
             ? $"conda env={condaEnvironmentName} ({resolvedCondaLauncher})"
             : $"python={resolvedPythonExe}";
         var pym3tDir = info.EnvironmentVariables["PYM3T_DIR"];
@@ -141,7 +151,7 @@ public class M3TProcessController : MonoBehaviour
     {
         ProcessStartInfo info;
 
-        if (useCondaActivate)
+        if (UseCondaActivate)
         {
             info = new ProcessStartInfo
             {
@@ -193,6 +203,17 @@ public class M3TProcessController : MonoBehaviour
 
     static void ForwardUserEnvironment(ProcessStartInfo info)
     {
+        // few_teeth_tracking/m3t_local.env（PC ごとの設定。Mac ではこれが唯一の手段）
+        foreach (var pair in localEnv)
+        {
+            if (!IsForwardedKey(pair.Key) || string.IsNullOrEmpty(pair.Value))
+                continue;
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(pair.Key)))
+                continue; // プロセス環境を優先
+            info.EnvironmentVariables[pair.Key] = pair.Value;
+        }
+        if (!IsWindowsHost)
+            return; // ユーザー／マシン環境変数（レジストリ）は Windows だけ
         foreach (var target in new[] { EnvironmentVariableTarget.User, EnvironmentVariableTarget.Machine })
         {
             IDictionary variables;
@@ -227,12 +248,16 @@ public class M3TProcessController : MonoBehaviour
         return false;
     }
 
-    // プロセス環境 → ユーザー環境変数 → マシン環境変数 の順で探す（上記と同じ理由）。
+    // プロセス環境 → m3t_local.env → ユーザー環境変数 → マシン環境変数 の順で探す（上記と同じ理由）。
     static string GetSetting(string name)
     {
         var value = Environment.GetEnvironmentVariable(name);
         if (!string.IsNullOrWhiteSpace(value))
             return value;
+        if (localEnv.TryGetValue(name, out value) && !string.IsNullOrWhiteSpace(value))
+            return value;
+        if (!IsWindowsHost)
+            return null;
         foreach (var target in new[] { EnvironmentVariableTarget.User, EnvironmentVariableTarget.Machine })
         {
             try
@@ -249,6 +274,65 @@ public class M3TProcessController : MonoBehaviour
         return null;
     }
 
+    // few_teeth_tracking/m3t_local.env（KEY=VALUE、# はコメント、gitignore）。tracker 側も同じファイルを読む（camera_io.py）。
+    static Dictionary<string, string> localEnv = new Dictionary<string, string>();
+    string localEnvPath = "";
+
+    static Dictionary<string, string> LoadLocalEnv(string path)
+    {
+        var result = new Dictionary<string, string>();
+        if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            return result;
+        try
+        {
+            foreach (var raw in File.ReadAllLines(path, Encoding.UTF8))
+            {
+                var line = raw.Trim();
+                if (line.Length == 0 || line.StartsWith("#"))
+                    continue;
+                var eq = line.IndexOf('=');
+                if (eq <= 0)
+                    continue;
+                var key = line.Substring(0, eq).Trim();
+                var value = line.Substring(eq + 1).Trim().Trim('"', '\'');
+                if (key.Length > 0)
+                    result[key] = ExpandHome(value);
+            }
+        }
+        catch (Exception e)
+        {
+            UnityEngine.Debug.LogWarning($"Failed to read {path}: {e.Message}");
+        }
+        return result;
+    }
+
+    static string ExpandHome(string value)
+    {
+        if (string.IsNullOrEmpty(value) || !(value == "~" || value.StartsWith("~/")))
+            return value;
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        return value == "~" ? home : Path.Combine(home, value.Substring(2));
+    }
+
+    // macOS / Linux: conda 環境 envName の python を、よくあるインストール先から探す
+    static string FindCondaEnvPython(string envName)
+    {
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var roots = new[]
+        {
+            Path.Combine(home, "miniforge3"), Path.Combine(home, "miniconda3"), Path.Combine(home, "anaconda3"),
+            Path.Combine(home, "mambaforge"), "/opt/homebrew/Caskroom/miniforge/base", "/usr/local/Caskroom/miniforge/base",
+            "/opt/homebrew/Caskroom/miniconda/base", "/opt/miniconda3", "/opt/anaconda3"
+        };
+        foreach (var root in roots)
+        {
+            var candidate = Path.Combine(root, "envs", envName, "bin", "python");
+            if (File.Exists(candidate))
+                return candidate;
+        }
+        return "";
+    }
+
     public string ResolvedCondaEnvironment => condaEnvironmentName;
     public string ResolvedPym3tDir => GetSetting("PYM3T_DIR") ?? "(未設定: ../pym3t)";
 
@@ -257,6 +341,8 @@ public class M3TProcessController : MonoBehaviour
         var projectRoot = Directory.GetParent(Application.dataPath).FullName;
         resolvedWorkingDirectory = ResolvePath(projectRoot, workingDirectory);
         resolvedScriptPath = ResolvePath(resolvedWorkingDirectory, scriptPath);
+        localEnvPath = Path.Combine(resolvedWorkingDirectory, "m3t_local.env");
+        localEnv = LoadLocalEnv(localEnvPath);
 
         var pythonFromEnvironment = GetSetting("M3T_PYTHON_EXE");
         resolvedPythonExe = ResolvePath(projectRoot,
@@ -269,14 +355,17 @@ public class M3TProcessController : MonoBehaviour
         var condaFromEnvironment = GetSetting("M3T_CONDA_BAT");
         var configuredConda = !string.IsNullOrWhiteSpace(condaFromEnvironment)
             ? condaFromEnvironment : condaBat;
-        resolvedCondaLauncher = FindCondaLauncher(configuredConda);
+        resolvedCondaLauncher = IsWindowsHost ? FindCondaLauncher(configuredConda) : "";
+
+        if (!IsWindowsHost && (string.IsNullOrEmpty(resolvedPythonExe) || !File.Exists(resolvedPythonExe)))
+            resolvedPythonExe = FindCondaEnvPython(condaEnvironmentName);
     }
 
     static string ResolvePath(string baseDirectory, string value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return "";
-        var expanded = Environment.ExpandEnvironmentVariables(value.Trim());
+        var expanded = ExpandHome(Environment.ExpandEnvironmentVariables(value.Trim()));
         return Path.GetFullPath(Path.IsPathRooted(expanded)
             ? expanded : Path.Combine(baseDirectory, expanded));
     }
@@ -347,6 +436,19 @@ public class M3TProcessController : MonoBehaviour
 
     void KillProcessTree(int processId)
     {
+        if (!IsWindowsHost)
+        {
+            try
+            {
+                if (process != null && !process.HasExited && !process.WaitForExit(1500))
+                    process.Kill();   // 'stop' コマンドで終わらなければ強制終了（子プロセスは作らない）
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogWarning($"Failed to kill M3T process: {e.Message}");
+            }
+            return;
+        }
         try
         {
             var info = new ProcessStartInfo
