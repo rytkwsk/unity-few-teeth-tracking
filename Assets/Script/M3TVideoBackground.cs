@@ -29,6 +29,8 @@ public class M3TVideoBackground : MonoBehaviour
     int textureHeight;
 
     public string Status => textureWidth > 0 ? $"{status} {textureWidth}x{textureHeight} #{receivedFrames}" : status;
+    // 最後に映像を貼った時刻（Time.unscaledTime）。M3TDemoGuide が「カメラ起動中」を出すのに使う
+    public float LastFrameTime { get; private set; } = -1f;
 
     void OnEnable()
     {
@@ -176,6 +178,7 @@ public class M3TVideoBackground : MonoBehaviour
 
         texture.LoadImage(imageBytes, false);
         receivedFrames++;
+        LastFrameTime = Time.unscaledTime;
         textureWidth = texture.width;
         textureHeight = texture.height;
     }

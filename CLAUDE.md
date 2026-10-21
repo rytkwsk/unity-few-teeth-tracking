@@ -19,10 +19,12 @@ M3T 歯列トラッカー（`../few_teeth_tracking/tracker_four_group.py`）の�
 - `M3TVideoBackground` — TCP 5010 の JPEG 映像を背景に貼る。
 - `M3TDemoUI` — デモ用パネル（スクロール可）。Quick Align / Start Demo / 手動微調整（Rotate Z 含む）、
   Marker error 表示と Register marker / Undo last、赤い ROTATION UNCERTAIN バナー。
-- `M3TDemoGuide` — 来場者向けの操作アナウンス（`M3TDemoUI` が自動で追加）。画面上部に STEP 1〜5（輪郭に合わせる → 手で隠す →
-  隠したまま緑の円まで横に動かす → 隠したまま回す → 手を離す）を英日で出し、`pose_anchor`（F 以外 = 遮蔽中）と姿勢の移動量・
-  回転量で自動で進む。40° を超えて回すと止めるよう促す（遮蔽中の回転は 35〜40° までしか確かめていない）。
-  スタッフ用キー G 表示切替 / N 次へ / B 戻る / R 最初から。
+- `M3TDemoGuide` — 来場者向けの操作アナウンス（`M3T` に手で付けていなければ `M3TDemoUI` が Play 時に自動で追加。Inspector の値を
+  残すには Play していないときに Add Component してシーンを保存）。画面上部に STEP 1〜5（輪郭に合わせる → 前歯を指 2 本で隠す →
+  隠したまま横 → 手前 → 奥へ戻す → 机の上で 25° 回す → 手を離す）を英日で出し、`pose_anchor`（F 以外 = 遮蔽中）と姿勢の移動量・
+  回転量で自動で進む。指のマーク・ゴールの円と矢印・回転の弧を映像に重ね、35° を超えて回すと止めるよう促す。映像が届くまでは
+  「カメラ起動中」。ゴールは机の面上（机の法線 = 模型の +y、歯列モデルの一番薄い方向）。隠す場所は前歯側（`coverGroups` = CD）:
+  奥歯側・真ん中を隠して回すと外れやすかった。スタッフ用キー G 表示切替 / N 次へ / B 戻る / R 最初から。
 - `M3TTargetOverlay` — 根管口の提示（`RootCanalGuideScene`）。`Assets/Resources/Targets/*.json` の目標
   （OBJ モデル座標。Unity は X 反転するので x → -x）を歯群メッシュのローカル座標に置き、切削開始点の十字・根管軸の破線・
   根管口の点・不確かさの円を常に手前に描く。全体 F 追跡＝緑、統合＝橙、見失い/回転不確か/誤ロック疑い＝灰＋DO NOT USE。
