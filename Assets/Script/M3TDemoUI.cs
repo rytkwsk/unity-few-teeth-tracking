@@ -55,6 +55,8 @@ public class M3TDemoUI : MonoBehaviour
     {
         if (processController == null) processController = GetComponent<M3TProcessController>();
         if (poseReceiver == null) poseReceiver = GetComponent<M3TPoseReceiver>();
+        // 来場者向けの操作アナウンス（シーンを編集せずに使えるよう、ここで追加する）
+        if (GetComponent<M3TDemoGuide>() == null) gameObject.AddComponent<M3TDemoGuide>();
         windowRect = new Rect(Mathf.Max(8, Screen.width - 400), 12, 388, Mathf.Min(720, Screen.height - 24));
     }
 

@@ -19,6 +19,10 @@ M3T 歯列トラッカー（`../few_teeth_tracking/tracker_four_group.py`）の�
 - `M3TVideoBackground` — TCP 5010 の JPEG 映像を背景に貼る。
 - `M3TDemoUI` — デモ用パネル（スクロール可）。Quick Align / Start Demo / 手動微調整（Rotate Z 含む）、
   Marker error 表示と Register marker / Undo last、赤い ROTATION UNCERTAIN バナー。
+- `M3TDemoGuide` — 来場者向けの操作アナウンス（`M3TDemoUI` が自動で追加）。画面上部に STEP 1〜5（輪郭に合わせる → 手で隠す →
+  隠したまま緑の円まで横に動かす → 隠したまま回す → 手を離す）を英日で出し、`pose_anchor`（F 以外 = 遮蔽中）と姿勢の移動量・
+  回転量で自動で進む。40° を超えて回すと止めるよう促す（遮蔽中の回転は 35〜40° までしか確かめていない）。
+  スタッフ用キー G 表示切替 / N 次へ / B 戻る / R 最初から。
 - `M3TTargetOverlay` — 根管口の提示（`RootCanalGuideScene`）。`Assets/Resources/Targets/*.json` の目標
   （OBJ モデル座標。Unity は X 反転するので x → -x）を歯群メッシュのローカル座標に置き、切削開始点の十字・根管軸の破線・
   根管口の点・不確かさの円を常に手前に描く。全体 F 追跡＝緑、統合＝橙、見失い/回転不確か/誤ロック疑い＝灰＋DO NOT USE。
